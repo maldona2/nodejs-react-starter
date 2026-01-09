@@ -1,0 +1,44 @@
+{
+  "name": "starter-template",
+  "version": "1.0.0",
+  "description": "A modern full-stack template using React (with Vite), Node.js (Express), and PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "start:docker": "docker-compose up",
+    "start:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "install:ci": "cd frontend && npm ci && cd ../backend && npm ci",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "build": "npm run install:all && npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "format": "npm run format:frontend && npm run format:backend",
+    "format:frontend": "cd frontend && npm run format",
+    "format:backend": "cd backend && npm run format",
+    "format:check": "npm run format:check:frontend && npm run format:check:backend",
+    "format:check:frontend": "cd frontend && npm run format:check",
+    "format:check:backend": "cd backend && npm run format:check"
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "node",
+    "express",
+    "postgresql",
+    "docker",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.4.2"
+  }
+}
