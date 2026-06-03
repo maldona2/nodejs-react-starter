@@ -6,6 +6,11 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  logger.error({ err }, 'Server failed to start');
+  process.exit(1);
 });
