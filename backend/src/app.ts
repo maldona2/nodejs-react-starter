@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { errorHandler } from './utils/errorHandler.js';
 import pool from './db/connect.js';
+import logger from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +50,7 @@ app.get('/api/health', async (req, res) => {
     await pool.query('SELECT 1');
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   } catch (err) {
+    logger.error({ err }, 'Health check DB query failed');
     res
       .status(503)
       .json({ status: 'error', timestamp: new Date().toISOString() });

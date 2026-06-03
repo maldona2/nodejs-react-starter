@@ -34,3 +34,8 @@ const shutdown = (signal: string) => {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+
+process.on('unhandledRejection', (err) => {
+  logger.error({ err }, 'Unhandled promise rejection');
+  shutdown('unhandledRejection');
+});

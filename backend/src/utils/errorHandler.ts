@@ -9,6 +9,11 @@ export const errorHandler = (
 ) => {
   logger.error({ err, req: { method: req.method, url: req.url } }, 'Error');
 
+  // Response already started (e.g. streamed): let Express close the connection.
+  if (res.headersSent) {
+    return _next(err);
+  }
+
   interface ErrorWithStatusCode extends Error {
     statusCode?: number;
   }
