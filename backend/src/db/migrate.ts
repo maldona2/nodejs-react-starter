@@ -53,7 +53,11 @@ async function migrate() {
     await client.query('COMMIT');
     logger.info('Migrations completed');
   } catch (err) {
-    await client.query('ROLLBACK');
+    try {
+      await client.query('ROLLBACK');
+    } catch (rollbackErr) {
+      logger.warn({ err: rollbackErr }, 'Rollback failed');
+    }
     logger.error({ err }, 'Migration failed');
     throw err;
   } finally {
