@@ -25,7 +25,9 @@ services:
     environment:
       - PORT=5000
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL must be set (no insecure default)}
+      # DATABASE_URL lo aporta cada overlay: dev con valor local, prod
+      # obligando a setearlo (sin default inseguro). El backend además falla
+      # al arrancar si falta (ver backend/src/db/connect.ts).
       - FRONTEND_URL=http://localhost:3000
       - LOG_LEVEL=info
     volumes:
@@ -42,8 +44,8 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mydb
-    ports:
-      - '5433:5432'
+    # Sin port binding por defecto: el overlay dev expone 5433 para acceso
+    # local; en prod Postgres queda accesible solo dentro de la red Docker.
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:

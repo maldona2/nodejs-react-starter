@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import app from './app.js';
 import logger from './utils/logger.js';
+import pool from './db/connect.js';
 
 dotenv.config();
 
@@ -14,3 +15,22 @@ server.on('error', (err) => {
   logger.error({ err }, 'Server failed to start');
   process.exit(1);
 });
+
+const shutdown = (signal: string) => {
+  logger.info(`${signal} received, shutting down gracefully`);
+  server.close(() => {
+    pool
+      .end()
+      .then(() => {
+        logger.info('Connections closed');
+        process.exit(0);
+      })
+      .catch((err) => {
+        logger.error({ err }, 'Error closing database pool');
+        process.exit(1);
+      });
+  });
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
