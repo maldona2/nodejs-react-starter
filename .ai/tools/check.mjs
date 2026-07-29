@@ -4,13 +4,16 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 
 const ROOT = process.cwd();
-const errors: string[] = [];
-const warnings: string[] = [];
+const errors = [];
+const warnings = [];
 
 const REQUIRED_FILES = [
     'AGENTS.md',
     '.ai/README.md',
     '.ai/global/rules/00-governance.md',
+    '.ai/tools/check.mjs',
+    '.claude/CLAUDE.md',
+    'skills-lock.json',
 ];
 
 const REQUIRED_AGENTS_SNIPPETS = [
@@ -18,6 +21,15 @@ const REQUIRED_AGENTS_SNIPPETS = [
     '.ai/local/rules/*.md',
     '.ai/global/skills/*/SKILL.md',
     '.ai/local/skills/*/SKILL.md',
+    '.agents/skills/*/SKILL.md',
+];
+
+const REQUIRED_GITIGNORE_SNIPPETS = [
+    '.ai/local/rules/*',
+    '!.ai/local/rules/.gitkeep',
+    '.ai/local/skills/*',
+    '!.ai/local/skills/.gitkeep',
+    '.claude/settings.local.json',
 ];
 
 const LOCAL_ALLOWED_TRACKED = new Set([
@@ -25,28 +37,28 @@ const LOCAL_ALLOWED_TRACKED = new Set([
     '.ai/local/skills/.gitkeep',
 ]);
 
-function isGitUnavailable(message: string): boolean {
+function isGitUnavailable(message) {
     return /git: not found|git is not recognized|ENOENT/i.test(message);
 }
 
-function fileExists(relPath: string): boolean {
+function fileExists(relPath) {
     return fs.existsSync(path.join(ROOT, relPath));
 }
 
-function readText(relPath: string): string {
+function readText(relPath) {
     return fs.readFileSync(path.join(ROOT, relPath), 'utf8');
 }
 
-function addError(message: string): void {
+function addError(message) {
     errors.push(message);
 }
 
-function addWarning(message: string): void {
+function addWarning(message) {
     warnings.push(message);
 }
 
-function walkFiles(dir: string): string[] {
-    const result: string[] = [];
+function walkFiles(dir) {
+    const result = [];
 
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const absPath = path.join(dir, entry.name);
@@ -60,7 +72,7 @@ function walkFiles(dir: string): string[] {
     return result;
 }
 
-function collectGlobalRuleFiles(): string[] {
+function collectGlobalRuleFiles() {
     const rulesDir = path.join(ROOT, '.ai/global/rules');
     if (!fs.existsSync(rulesDir)) {
         return [];
@@ -68,7 +80,7 @@ function collectGlobalRuleFiles(): string[] {
     return walkFiles(rulesDir).filter((absPath) => path.extname(absPath).toLowerCase() === '.md');
 }
 
-function collectGlobalSkillFiles(): string[] {
+function collectGlobalSkillFiles() {
     const skillsDir = path.join(ROOT, '.ai/global/skills');
     if (!fs.existsSync(skillsDir)) {
         return [];
@@ -91,11 +103,61 @@ if (fileExists('AGENTS.md')) {
     }
 }
 
+if (fileExists('.claude/CLAUDE.md')) {
+    const claude = readText('.claude/CLAUDE.md');
+    if (!claude.includes('@../AGENTS.md')) {
+        addError('.claude/CLAUDE.md must import the canonical AGENTS.md entrypoint');
+    }
+    if (/^## Tech Stack$/m.test(claude)) {
+        addError('.claude/CLAUDE.md must be a thin bridge and must not duplicate project instructions');
+    }
+}
+
+if (fileExists('.gitignore')) {
+    const gitignore = readText('.gitignore');
+    for (const snippet of REQUIRED_GITIGNORE_SNIPPETS) {
+        if (!gitignore.split(/\r?\n/).includes(snippet)) {
+            addError(`.gitignore must contain AI-local ignore rule: ${snippet}`);
+        }
+    }
+}
+
+if (fileExists('skills-lock.json')) {
+    try {
+        const lock = JSON.parse(readText('skills-lock.json'));
+        for (const skillName of Object.keys(lock.skills ?? {})) {
+            const installedSkill = `.agents/skills/${skillName}/SKILL.md`;
+            const claudeSkill = `.claude/skills/${skillName}`;
+            if (!fileExists(installedSkill)) {
+                addError(`Locked skill is not installed: ${installedSkill}`);
+            }
+            if (!fileExists(claudeSkill)) {
+                addError(`Locked skill is not exposed to Claude: ${claudeSkill}`);
+            }
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        addError(`Unable to parse skills-lock.json: ${message}`);
+    }
+}
+
+if (fileExists('package.json')) {
+    try {
+        const packageJson = JSON.parse(readText('package.json'));
+        if (packageJson.scripts?.['ai:check'] !== 'node .ai/tools/check.mjs') {
+            addError('package.json must expose the AI configuration check as npm run ai:check');
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        addError(`Unable to parse package.json: ${message}`);
+    }
+}
+
 const globalRuleFiles = collectGlobalRuleFiles();
 if (globalRuleFiles.length === 0) {
     addError('No global rule files found in .ai/global/rules/*.md');
 } else {
-    const versionGatedRuleFiles: Array<{ relPath: string; markers: number }> = [];
+    const versionGatedRuleFiles = [];
     for (const absPath of globalRuleFiles) {
         const relPath = path.relative(ROOT, absPath).replaceAll('\\', '/');
         const text = fs.readFileSync(absPath, 'utf8');
@@ -132,12 +194,12 @@ if (fileExists('.ai/global')) {
     }
 }
 
-let trackedFiles: string[] = [];
+let trackedFiles = [];
 try {
     trackedFiles = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8' })
         .split(/\r?\n/)
         .filter(Boolean);
-} catch (error: unknown) {
+} catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (isGitUnavailable(message) && !process.env.CI) {
         process.stderr.write('AI config check warning: git is unavailable, local tracked-file validation is skipped.\n');

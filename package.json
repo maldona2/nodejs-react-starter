@@ -4,6 +4,7 @@
   "description": "A modern full-stack template using React (with Vite), Node.js (Express), and PostgreSQL",
   "main": "index.js",
   "scripts": {
+    "ai:check": "node .ai/tools/check.mjs",
     "start:docker": "docker-compose up",
     "start:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres && concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",

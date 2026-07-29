@@ -20,6 +20,13 @@ logs/
 *.swp
 *.swo
 
+# AI agent local configuration
+.ai/local/rules/*
+!.ai/local/rules/.gitkeep
+.ai/local/skills/*
+!.ai/local/skills/.gitkeep
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db
