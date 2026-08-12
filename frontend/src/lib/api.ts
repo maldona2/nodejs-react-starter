@@ -7,13 +7,8 @@ const api = axios.create({
   },
 });
 
-// Add request interceptor for auth tokens if needed
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+// Auth: prefer httpOnly cookies issued by the backend, and set
+// `withCredentials: true` above. Do not read tokens from localStorage —
+// see .ai/global/rules/40-frontend-security.md.
 
 export default api;
