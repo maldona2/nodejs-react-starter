@@ -33,6 +33,14 @@ export default [
     },
   },
   {
+    files: ['**/*.test.ts', 'src/test/**/*.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
+  {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
