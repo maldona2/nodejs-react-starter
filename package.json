@@ -38,6 +38,9 @@
   ],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1",
     "prettier": "^3.4.2"

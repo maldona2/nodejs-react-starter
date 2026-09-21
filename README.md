@@ -1,6 +1,6 @@
 # Starter Template
 
-A modern full-stack web application template with React 19, Node.js 20, Express, TypeScript, PostgreSQL 15, and Docker.
+A modern full-stack web application template with React 19, Node.js 24, Express, TypeScript, PostgreSQL 15, and Docker.
 
 ## 🚀 Tech Stack
 
@@ -13,7 +13,7 @@ A modern full-stack web application template with React 19, Node.js 20, Express,
 - **Vitest** - Fast unit testing
 
 ### Backend
-- **Node.js 20+** - JavaScript runtime
+- **Node.js 24+** - JavaScript runtime
 - **Express** - Web framework
 - **TypeScript** - Type-safe development
 - **PostgreSQL 15** - Relational database
@@ -63,7 +63,7 @@ starter-template/
 
 ### Prerequisites
 
-- Node.js 20+ installed
+- Node.js 24+ installed (`nvm use` picks it up from `.nvmrc`)
 - Docker and Docker Compose installed
 - Git installed
 
