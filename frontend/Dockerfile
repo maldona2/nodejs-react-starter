@@ -9,7 +9,7 @@ ENV VITE_API_URL=${VITE_API_URL}
 
 RUN npm run build
 
-FROM nginx:1.30.6-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+FROM nginx:1.31.0-alpine@sha256:2f07d83bf561b506400dc183b1b2003803e39efbd22451f848adaba14d28c7c7
 RUN apk add --no-cache gettext
 
 COPY --from=build /app/dist /usr/share/nginx/html
