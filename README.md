@@ -13,7 +13,7 @@ A modern full-stack web application template with React 19, Node.js 24, Express,
 - **Vitest** - Fast unit testing
 
 ### Backend
-- **Node.js 24+** - JavaScript runtime
+- **Node.js 24.22.1+** - JavaScript runtime
 - **Express** - Web framework
 - **TypeScript** - Type-safe development
 - **PostgreSQL 15** - Relational database
@@ -63,7 +63,7 @@ starter-template/
 
 ### Prerequisites
 
-- Node.js 24+ installed (`nvm use` picks it up from `.nvmrc`)
+- Node.js 24.22.1+ installed (`nvm use` picks it up from `.nvmrc`)
 - Docker and Docker Compose installed
 - Git installed
 
