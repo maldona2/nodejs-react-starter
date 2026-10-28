@@ -39,7 +39,7 @@ services:
       retries: 5
       start_period: 30s
   postgres:
-    image: postgres:15.19-alpine@sha256:54e0dd8e8cddcdbb9156c2486eed5a43eccb7214d7c6828097d41ce049fb3984
+    image: postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
