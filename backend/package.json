@@ -29,7 +29,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^24.13.4",
+    "@types/node": "^26.6.6",
     "@types/pg": "^8.23.1",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.72.2",
